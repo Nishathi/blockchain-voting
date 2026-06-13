@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0a0e1a;color:#e8eaf0;min-height:100vh}
+
+.app{display:flex;flex-direction:column;min-height:100vh}
+
+.topbar{background:#0d1226;border-bottom:1px solid #1e2640;padding:0 32px;display:flex;align-items:center;justify-content:space-between;height:64px;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-icon{width:34px;height:34px;background:#5c6ef8;border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2}
+.logo-name{font-size:16px;font-weight:700;color:#fff;letter-spacing:-0.3px}
+.logo-tag{font-size:11px;color:#5c6ef8;font-weight:500;background:#5c6ef820;padding:2px 8px;border-radius:20px;border:1px solid #5c6ef840}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.chain-live{display:flex;align-items:center;gap:6px;font-size:12px;color:#22d3a0}
+.chain-dot{width:7px;height:7px;background:#22d3a0;border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.block-count{font-family:'JetBrains Mono',monospace;font-size:12px;color:#8892b0;background:#1e2640;padding:4px 12px;border-radius:6px}
+
+.layout{display:flex;flex:1}
+
+.sidebar{width:220px;background:#0d1226;border-right:1px solid #1e2640;padding:24px 0;flex-shrink:0}
+.nav-section{margin-bottom:8px}
+.nav-label{font-size:10px;font-weight:600;color:#3d4a6b;text-transform:uppercase;letter-spacing:1px;padding:0 20px 8px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:#8892b0;font-size:14px;font-weight:400;transition:all 0.15s;border-left:3px solid transparent}
+.nav-item:hover{color:#c8d0e8;background:#ffffff06}
+.nav-item.active{color:#fff;background:#5c6ef815;border-left-color:#5c6ef8}
+.nav-item .ni{width:18px;height:18px;opacity:0.7}
+.nav-item.active .ni{opacity:1}
+.nav-badge{margin-left:auto;font-size:10px;background:#5c6ef8;color:#fff;padding:2px 6px;border-radius:10px;font-weight:600}
+.nav-badge.green{background:#22d3a0;color:#0a0e1a}
+.nav-badge.red{background:#f87171}
+
+.main{flex:1;padding:32px;overflow-y:auto;background:#0a0e1a}
+
+.page{display:none}
+.page.active{display:block}
+
+.page-header{margin-bottom:28px}
+.page-title{font-size:22px;font-weight:700;color:#fff;letter-spacing:-0.4px;margin-bottom:6px}
+.page-sub{font-size:14px;color:#5a6785}
+
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.stat-card{background:#0d1226;border:1px solid #1e2640;border-radius:12px;padding:20px}
+.stat-label{font-size:11px;color:#5a6785;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px}
+.stat-value{font-size:28px;font-weight:700;color:#fff;font-family:'JetBrains Mono',monospace}
+.stat-sub{font-size:11px;color:#5a6785;margin-top:4px}
+.stat-card.accent{border-color:#5c6ef840;background:linear-gradient(135deg,#5c6ef810,#0d1226)}
+.stat-card.green{border-color:#22d3a040;background:linear-gradient(135deg,#22d3a010,#0d1226)}
+
+.card{background:#0d1226;border:1px solid #1e2640;border-radius:14px;padding:24px;margin-bottom:20px}
+.card-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+.card-title .dot{width:8px;height:8px;border-radius:2px;background:#5c6ef8}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.form-group{display:flex;flex-direction:column;gap:7px}
+.form-label{font-size:12px;color:#8892b0;font-weight:500}
+.form-input{background:#131829;border:1px solid #1e2640;border-radius:8px;padding:10px 14px;font-size:14px;color:#e8eaf0;font-family:'Inter',sans-serif;outline:none;transition:border 0.15s}
+.form-input:focus{border-color:#5c6ef8}
+.form-input::placeholder{color:#3d4a6b}
+
+.btn{padding:11px 22px;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all 0.15s;display:inline-flex;align-items:center;gap:8px}
+.btn-primary{background:#5c6ef8;color:#fff}
+.btn-primary:hover{background:#4a5ce0}
+.btn-primary:disabled{background:#2a3260;color:#5a6785;cursor:not-allowed}
+.btn-outline{background:transparent;border:1px solid #1e2640;color:#8892b0}
+.btn-outline:hover{border-color:#5c6ef8;color:#5c6ef8}
+.btn-danger{background:#f8716120;border:1px solid #f8716140;color:#f87171}
+.btn-danger:hover{background:#f8716130}
+.btn-success{background:#22d3a020;border:1px solid #22d3a040;color:#22d3a0}
+
+.wallet-box{background:#131829;border:1px solid #22d3a030;border-radius:10px;padding:16px;margin-top:14px}
+.wallet-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.wallet-row:last-child{margin-bottom:0}
+.wk-label{font-size:11px;color:#5a6785;min-width:80px}
+.wk-value{font-family:'JetBrains Mono',monospace;font-size:12px;color:#22d3a0;background:#22d3a010;padding:4px 10px;border-radius:6px;flex:1;word-break:break-all}
+.wk-value.priv{color:#f8c471;background:#f8c47110}
+
+.voter-table{width:100%;border-collapse:collapse}
+.voter-table th{font-size:11px;color:#5a6785;font-weight:500;text-transform:uppercase;letter-spacing:0.5px;padding:0 0 12px;text-align:left;border-bottom:1px solid #1e2640}
+.voter-table td{padding:12px 0;border-bottom:1px solid #0f1628;font-size:13px;color:#c8d0e8;vertical-align:middle}
+.voter-table tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px}
+.badge-voted{background:#22d3a020;color:#22d3a0;border:1px solid #22d3a030}
+.badge-pending{background:#f8c47120;color:#f8c471;border:1px solid #f8c47130}
+.badge-tampered{background:#f8716120;color:#f87171;border:1px solid #f8716130}
+
+.candidate-grid{display:flex;flex-direction:column;gap:12px}
+.candidate-card{background:#131829;border:1px solid #1e2640;border-radius:10px;padding:16px 20px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:16px}
+.candidate-card:hover{border-color:#5c6ef850}
+.candidate-card.selected{border-color:#5c6ef8;background:#5c6ef810}
+.c-avatar{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0}
+.c-info{flex:1}
+.c-name{font-size:15px;font-weight:600;color:#fff;margin-bottom:3px}
+.c-party{font-size:12px;color:#5a6785}
+.c-check{width:22px;height:22px;border-radius:50%;background:#5c6ef8;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.15s}
+.candidate-card.selected .c-check{opacity:1}
+
+.alert{padding:13px 16px;border-radius:8px;font-size:13px;margin-top:14px;display:flex;align-items:center;gap:10px}
+.alert-success{background:#22d3a015;border:1px solid #22d3a030;color:#22d3a0}
+.alert-error{background:#f8716115;border:1px solid #f8716130;color:#f87171}
+.alert-info{background:#5c6ef815;border:1px solid #5c6ef830;color:#8fa0f8}
+.alert-warn{background:#f8c47115;border:1px solid #f8c47130;color:#f8c471}
+
+.chain-visual{display:flex;flex-direction:column;gap:0}
+.block-item{position:relative}
+.block-connector{display:flex;justify-content:center;padding:4px 0}
+.block-connector-line{width:2px;height:20px;background:#1e2640}
+.block-connector-line.tampered{background:#f8716150}
+.block-box{background:#131829;border:1px solid #1e2640;border-radius:10px;padding:16px;cursor:pointer;transition:all 0.15s}
+.block-box:hover{border-color:#5c6ef840}
+.block-box.genesis{border-color:#22d3a030}
+.block-box.tampered-block{border-color:#f8716150;background:#f8716108}
+.block-header{display:flex;align-items:center;gap:12px;margin-bottom:0}
+.block-idx{width:32px;height:32px;border-radius:7px;background:#1e2640;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;color:#8892b0;flex-shrink:0}
+.block-idx.genesis-idx{background:#22d3a020;color:#22d3a0}
+.block-idx.tampered-idx{background:#f8716120;color:#f87171}
+.block-meta{flex:1}
+.block-type{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px}
+.block-hash{font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a6785}
+.block-expand{color:#3d4a6b;font-size:18px;transition:transform 0.15s}
+.block-detail{margin-top:14px;padding-top:14px;border-top:1px solid #1a2035;display:none;flex-direction:column;gap:8px}
+.block-detail.open{display:flex}
+.detail-row{display:flex;gap:12px;font-size:12px}
+.detail-key{color:#5a6785;min-width:110px;flex-shrink:0}
+.detail-val{font-family:'JetBrains Mono',monospace;color:#c8d0e8;word-break:break-all;font-size:11px}
+.detail-val.ok{color:#22d3a0}
+.detail-val.bad{color:#f87171}
+
+.results-bars{display:flex;flex-direction:column;gap:20px}
+.result-row{}
+.result-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.result-name{font-size:14px;font-weight:500;color:#e8eaf0}
+.result-count{font-family:'JetBrains Mono',monospace;font-size:13px;color:#8892b0}
+.bar-track{height:10px;background:#131829;border-radius:5px;overflow:hidden;border:1px solid #1e2640}
+.bar-fill{height:100%;border-radius:5px;transition:width 0.6s cubic-bezier(.4,0,.2,1)}
+.result-pct{font-size:12px;color:#5a6785;margin-top:5px;text-align:right}
+.winner-crown{font-size:16px;margin-left:6px}
+
+.tamper-inputs{display:grid;grid-template-columns:1fr 2fr auto;gap:12px;align-items:end;margin-bottom:14px}
+.validate-result{padding:16px;border-radius:10px;font-size:14px;font-weight:500;margin-top:14px;display:flex;align-items:flex-start;gap:12px}
+.validate-result.ok{background:#22d3a010;border:1px solid #22d3a030;color:#22d3a0}
+.validate-result.fail{background:#f8716110;border:1px solid #f8716130;color:#f87171}
+.validate-icon{font-size:22px;flex-shrink:0}
+.validate-text{}
+.validate-title{font-size:15px;font-weight:700;margin-bottom:4px}
+.validate-desc{font-size:13px;opacity:0.8;font-weight:400}
+
+.how-works{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:0}
+.hw-item{background:#131829;border:1px solid #1e2640;border-radius:10px;padding:16px}
+.hw-num{font-size:28px;font-weight:700;color:#5c6ef830;font-family:'JetBrains Mono',monospace;margin-bottom:8px}
+.hw-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:5px}
+.hw-desc{font-size:12px;color:#5a6785;line-height:1.6}
+
+.mining-anim{display:flex;align-items:center;gap:8px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#5c6ef8}
+.mining-dots span{animation:blink 1.4s infinite}
+.mining-dots span:nth-child(2){animation-delay:0.2s}
+.mining-dots span:nth-child(3){animation-delay:0.4s}
+@keyframes blink{0%,80%,100%{opacity:0}40%{opacity:1}}
+
+.voted-banner{text-align:center;padding:40px 20px;background:#22d3a008;border:1px solid #22d3a020;border-radius:14px}
+.voted-icon{font-size:48px;margin-bottom:12px}
+.voted-title{font-size:20px;font-weight:700;color:#22d3a0;margin-bottom:6px}
+.voted-desc{font-size:14px;color:#5a6785}
+
+.empty-state{text-align:center;padding:40px 20px;color:#3d4a6b}
+.empty-icon{font-size:36px;margin-bottom:12px;opacity:0.4}
+.empty-text{font-size:14px}
+
+.section-divider{height:1px;background:#1e2640;margin:20px 0}
+</style>
+
+<div class="app">
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h7v7H14z" opacity="0.4"/><path d="M17.5 14v7M14 17.5h7"/></svg>
+      </div>
+      <span class="logo-name">VoteChain</span>
+      <span class="logo-tag">Blockchain Voting</span>
+    </div>
+    <div class="topbar-right">
+      <div class="chain-live"><div class="chain-dot"></div>Chain Active</div>
+      <div class="block-count" id="blockCountTop">1 blocks</div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="sidebar">
+      <div class="nav-section">
+        <div class="nav-label">Dashboard</div>
+        <div class="nav-item active" onclick="goTo('overview')">
+          <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          Overview
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Voting</div>
+        <div class="nav-item" onclick="goTo('register')">
+          <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Register
+          <span class="nav-badge" id="voterBadge">0</span>
+        </div>
+        <div class="nav-item" onclick="goTo('vote')">
+          <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+          Cast Vote
+        </div>
+        <div class="nav-item" onclick="goTo('results')">
+          <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+          Live Results
+          <span class="nav-badge green" id="voteBadge">0</span>
+        </div>
+      </div>
+      <div class="nav-section">
+        <div class="nav-label">Chain</div>
+        <div class="nav-item" onclick="goTo('blockchain')">
+          <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="7" width="6" height="10" rx="1"/><rect x="9" y="4" width="6" height="16" rx="1"/><rect x="16" y="7" width="6" height="10" rx="1"/></svg>
+          Block Explorer
+        </div>
+        <div class="nav-item" onclick="goTo('tamper')">
+          <svg class="ni" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Tamper Lab
+          <span class="nav-badge red">!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="main">
+
+      <!-- OVERVIEW -->
+      <div class="page active" id="page-overview">
+        <div class="page-header">
+          <div class="page-title">Dashboard Overview</div>
+          <div class="page-sub">Real-time blockchain voting system status</div>
+        </div>
+        <div class="stats-row">
+          <div class="stat-card accent">
+            <div class="stat-label">Total Blocks</div>
+            <div class="stat-value" id="ovBlocks">1</div>
+            <div class="stat-sub">including genesis</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-label">Votes Cast</div>
+            <div class="stat-value" id="ovVotes">0</div>
+            <div class="stat-sub">on-chain</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Registered Voters</div>
+            <div class="stat-value" id="ovVoters">0</div>
+            <div class="stat-sub">unique wallets</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Chain Integrity</div>
+            <div class="stat-value" id="ovInteg" style="font-size:18px;color:#22d3a0">Valid</div>
+            <div class="stat-sub">last checked now</div>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+          <div class="card">
+            <div class="card-title"><div class="dot" style="background:#22d3a0"></div>Candidate Standing</div>
+            <div id="ovResults" class="results-bars"></div>
+          </div>
+          <div class="card">
+            <div class="card-title"><div class="dot"></div>How it works</div>
+            <div class="how-works">
+              <div class="hw-item"><div class="hw-num">01</div><div class="hw-title">Register</div><div class="hw-desc">Get a cryptographic wallet with public & private keys</div></div>
+              <div class="hw-item"><div class="hw-num">02</div><div class="hw-title">Sign</div><div class="hw-desc">Your vote is SHA-256 signed with your private key</div></div>
+              <div class="hw-item"><div class="hw-num">03</div><div class="hw-title">Mine</div><div class="hw-desc">Proof-of-work mines your vote into the chain</div></div>
+              <div class="hw-item"><div class="hw-num">04</div><div class="hw-title">Immutable</div><div class="hw-desc">Once added, no one can alter the vote history</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REGISTER -->
+      <div class="page" id="page-register">
+        <div class="page-header">
+          <div class="page-title">Voter Registration</div>
+          <div class="page-sub">Create your cryptographic wallet to participate in voting</div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div class="dot"></div>New voter registration</div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Full name</label>
+              <input class="form-input" id="regName" placeholder="e.g. Ravi Kumar" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Voter ID</label>
+              <input class="form-input" id="regId" placeholder="e.g. TN-2024-001" />
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="handleRegister()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7-7 7 7"/></svg>
+            Generate Wallet & Register
+          </button>
+          <div id="regAlert" style="display:none"></div>
+          <div id="walletBox" style="display:none">
+            <div class="wallet-box">
+              <div style="font-size:12px;color:#22d3a0;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:6px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                Wallet Generated
+              </div>
+              <div class="wallet-row"><span class="wk-label">Public Key</span><span class="wk-value" id="wPub"></span></div>
+              <div class="wallet-row"><span class="wk-label">Private Key</span><span class="wk-value priv" id="wPriv"></span></div>
+              <div style="font-size:11px;color:#5a6785;margin-top:10px">Keep your private key secret. It signs your vote cryptographically.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-title"><div class="dot" style="background:#22d3a0"></div>Registered voters</div>
+          <div id="voterList">
+            <div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No voters registered yet</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VOTE -->
+      <div class="page" id="page-vote">
+        <div class="page-header">
+          <div class="page-title">Cast Your Vote</div>
+          <div class="page-sub">Your vote is cryptographically signed and mined into the blockchain</div>
+        </div>
+        <div id="voteContent">
+          <div class="card">
+            <div class="card-title"><div class="dot"></div>Select a candidate</div>
+            <div class="candidate-grid" id="candidateGrid"></div>
+          </div>
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <div style="font-size:14px;color:#8892b0">Voting as: <span id="votingAs" style="color:#fff;font-weight:500">—</span></div>
+              <div id="miningStatus"></div>
+            </div>
+            <button class="btn btn-primary" id="voteBtn" onclick="handleVote()" disabled style="width:100%;justify-content:center">
+              Sign & Cast Vote
+            </button>
+            <div id="voteAlert" style="display:none"></div>
+          </div>
+        </div>
+        <div id="votedBanner" style="display:none">
+          <div class="voted-banner">
+            <div class="voted-icon">✅</div>
+            <div class="voted-title">Vote Recorded on Blockchain</div>
+            <div class="voted-desc">Your vote has been cryptographically signed and mined into an immutable block.</div>
+          </div>
+        </div>
+        <div id="noWalletBanner" style="display:none">
+          <div class="voted-banner" style="border-color:#5c6ef830;background:#5c6ef808">
+            <div class="voted-icon">🔐</div>
+            <div class="voted-title" style="color:#8fa0f8">Register First</div>
+            <div class="voted-desc">You need a wallet before you can cast a vote. Go to the Register tab.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULTS -->
+      <div class="page" id="page-results">
+        <div class="page-header">
+          <div class="page-title">Live Results</div>
+          <div class="page-sub">Real-time vote tally from the blockchain</div>
+        </div>
+        <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+          <div class="stat-card green"><div class="stat-label">Total Votes</div><div class="stat-value" id="resTotal">0</div></div>
+          <div class="stat-card"><div class="stat-label">Blocks Mined</div><div class="stat-value" id="resMined">0</div></div>
+          <div class="stat-card"><div class="stat-label">Turnout</div><div class="stat-value" id="resTurnout">0%</div></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div class="dot" style="background:#22d3a0"></div>Vote distribution</div>
+          <div class="results-bars" id="resChart"></div>
+        </div>
+      </div>
+
+      <!-- BLOCKCHAIN -->
+      <div class="page" id="page-blockchain">
+        <div class="page-header">
+          <div class="page-title">Block Explorer</div>
+          <div class="page-sub">Click any block to inspect its contents</div>
+        </div>
+        <div class="card">
+          <div class="chain-visual" id="chainVisual"></div>
+        </div>
+      </div>
+
+      <!-- TAMPER -->
+      <div class="page" id="page-tamper">
+        <div class="page-header">
+          <div class="page-title">Tamper Lab</div>
+          <div class="page-sub">Simulate an attack — then detect it with cryptographic validation</div>
+        </div>
+        <div class="alert alert-warn" style="margin-bottom:20px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+          This simulates a real attack. Tamper with a block, then validate the chain to see how blockchain detects fraud.
+        </div>
+        <div class="card">
+          <div class="card-title"><div class="dot" style="background:#f87171"></div>Tamper a block</div>
+          <div class="tamper-inputs">
+            <div class="form-group">
+              <label class="form-label">Block index</label>
+              <input class="form-input" id="tamperIdx" type="number" min="1" value="1" placeholder="1" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">New candidate ID (A, B or C)</label>
+              <input class="form-input" id="tamperVal" placeholder="e.g. B" />
+            </div>
+            <button class="btn btn-danger" onclick="handleTamper()" style="height:40px;align-self:end">Tamper</button>
+          </div>
+          <button class="btn btn-success" onclick="validateChain()" style="width:100%;justify-content:center">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9 9 4.03 9 9z"/></svg>
+            Validate Chain Integrity
+          </button>
+          <div id="validateResult" style="display:none"></div>
+        </div>
+        <div class="card">
+          <div class="card-title"><div class="dot"></div>How tamper detection works</div>
+          <div class="how-works">
+            <div class="hw-item"><div class="hw-num">H1</div><div class="hw-title">Hash linking</div><div class="hw-desc">Every block contains the hash of the previous block, creating a chain</div></div>
+            <div class="hw-item"><div class="hw-num">H2</div><div class="hw-title">Re-computation</div><div class="hw-desc">Validator re-hashes each block and compares to stored hash</div></div>
+            <div class="hw-item"><div class="hw-num">H3</div><div class="hw-title">Mismatch detection</div><div class="hw-desc">Any data change breaks the hash — instantly detected</div></div>
+            <div class="hw-item"><div class="hw-num">H4</div><div class="hw-title">Chain break</div><div class="hw-desc">Changed block's new hash mismatches next block's previousHash</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const CANDIDATES=[
+  {id:'A',name:'Alice Chen',party:'Progressive Alliance',color:'#5c6ef8',bg:'#5c6ef820'},
+  {id:'B',name:'Bob Kumar',party:'Liberty Front',color:'#22d3a0',bg:'#22d3a020'},
+  {id:'C',name:'Clara Osei',party:'Unity Coalition',color:'#f8c471',bg:'#f8c47120'},
+];
+
+let voters={},chain=[{index:0,timestamp:new Date('2024-01-01').toISOString(),data:{type:'GENESIS',message:'VoteChain Genesis Block'},previousHash:'0000000000000000',hash:'0000genesis0000block',nonce:0}],wallet=null,selectedCand=null,mining=false,expandedBlocks=new Set();
+
+async function sha256(msg){const b=new TextEncoder().encode(msg),h=await crypto.subtle.digest('SHA-256',b);return Array.from(new Uint8Array(h)).map(x=>x.toString(16).padStart(2,'0')).join('')}
+
+async function mine(data,prev,diff=2){let n=0,h='',p='0'.repeat(diff);while(!h.startsWith(p)){n++;h=await sha256(`${prev}${JSON.stringify(data)}${n}`)}return{hash:h,nonce:n}}
+
+function genWallet(){const id=Math.random().toString(36).slice(2,10).toUpperCase();const sk=Math.random().toString(36).slice(2,20);return{publicKey:`PK-${id}`,privateKey:`SK-${sk}`}}
+
+function votes(){const c={A:0,B:0,C:0};chain.forEach(b=>{if(b.data?.type==='VOTE')c[b.data.candidateId]=(c[b.data.candidateId]||0)+1});return c}
+function totalVotes(){return Object.values(votes()).reduce((a,b)=>a+b,0)}
+
+function goTo(page){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));document.getElementById('page-'+page).classList.add('active');const items=document.querySelectorAll('.nav-item');items.forEach(n=>{if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes(page))n.classList.add('active')});refreshAll()}
+
+function refreshAll(){updateStats();renderVoterList();renderCandidateGrid();renderResults();renderChain();updateVotePage()}
+
+function updateStats(){const t=totalVotes(),bl=chain.length,vr=Object.keys(voters).length;document.getElementById('blockCountTop').textContent=bl+' blocks';document.getElementById('ovBlocks').textContent=bl;document.getElementById('ovVotes').textContent=t;document.getElementById('ovVoters').textContent=vr;document.getElementById('voterBadge').textContent=vr;document.getElementById('voteBadge').textContent=t;document.getElementById('resTotal').textContent=t;document.getElementById('resMined').textContent=bl-1;const turn=vr>0?Math.round(t/vr*100)+'%':'0%';document.getElementById('resTurnout').textContent=turn;renderOverviewResults();renderResults()}
+
+function renderOverviewResults(){const vc=votes(),t=totalVotes(),el=document.getElementById('ovResults');if(t===0){el.innerHTML='<div class="empty-state"><div class="empty-text">No votes yet</div></div>';return}el.innerHTML=CANDIDATES.map(c=>{const p=t>0?Math.round(vc[c.id]/t*100):0;return`<div class="result-row" style="margin-bottom:16px"><div class="result-top"><span class="result-name">${c.name}</span><span class="result-count">${vc[c.id]} votes</span></div><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${c.color}"></div></div><div class="result-pct">${p}%</div></div>`}).join('')}
+
+function renderResults(){const vc=votes(),t=totalVotes(),el=document.getElementById('resChart');const max=Math.max(...Object.values(vc));el.innerHTML=CANDIDATES.map(c=>{const p=t>0?Math.round(vc[c.id]/t*100):0;const crown=vc[c.id]===max&&t>0?' 👑':'';return`<div class="result-row"><div class="result-top"><span class="result-name">${c.name}<span style="font-size:12px;color:${c.color};margin-left:8px">${c.party}</span>${crown}</span><span class="result-count" style="font-family:'JetBrains Mono',monospace">${vc[c.id]} / ${t} votes</span></div><div class="bar-track"><div class="bar-fill" style="width:${p}%;background:${c.color}"></div></div><div class="result-pct" style="color:${c.color}">${p}%</div></div>`}).join('')}
+
+function renderVoterList(){const el=document.getElementById('voterList');const v=Object.values(voters);if(!v.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No voters registered yet</div></div>';return}el.innerHTML=`<table class="voter-table"><thead><tr><th>Name</th><th>Voter ID</th><th>Public Key</th><th>Status</th></tr></thead><tbody>${v.map(vt=>`<tr><td style="color:#fff;font-weight:500">${vt.name}</td><td style="color:#8892b0">${vt.voterId}</td><td><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a6785">${vt.publicKey}</span></td><td><span class="badge ${vt.voted?'badge-voted':'badge-pending'}">${vt.voted?'✓ Voted':'Pending'}</span></td></tr>`).join('')}</tbody></table>`}
+
+function renderCandidateGrid(){const el=document.getElementById('candidateGrid');el.innerHTML=CANDIDATES.map(c=>`<div class="candidate-card ${selectedCand===c.id?'selected':''}" onclick="selectCand('${c.id}')"><div class="c-avatar" style="background:${c.bg};color:${c.color}">${c.id}</div><div class="c-info"><div class="c-name">${c.name}</div><div class="c-party">${c.party}</div></div><div class="c-check"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div></div>`).join('')}
+
+function selectCand(id){if(mining)return;selectedCand=id;renderCandidateGrid();document.getElementById('voteBtn').disabled=false}
+
+function updateVotePage(){const vb=document.getElementById('votedBanner'),vc=document.getElementById('voteContent'),nb=document.getElementById('noWalletBanner');if(!wallet){vb.style.display='none';vc.style.display='none';nb.style.display='block';return}nb.style.display='none';const voter=voters[wallet.publicKey];if(voter?.voted){vb.style.display='block';vc.style.display='none'}else{vb.style.display='none';vc.style.display='block';document.getElementById('votingAs').textContent=voter?.name||'—'}}
+
+function renderChain(){const el=document.getElementById('chainVisual');el.innerHTML=chain.map((b,i)=>{const isGen=b.index===0,isTamp=b.data?._tampered;const expanded=expandedBlocks.has(i);const cand=b.data?.candidateId?CANDIDATES.find(c=>c.id===b.data.candidateId):null;return`${i>0?`<div class="block-connector"><div class="block-connector-line ${isTamp?'tampered':''}"></div></div>`:''}<div class="block-item"><div class="block-box ${isGen?'genesis':''} ${isTamp?'tampered-block':''}" onclick="toggleBlock(${i})"><div class="block-header"><div class="block-idx ${isGen?'genesis-idx':''} ${isTamp?'tampered-idx':''}">#${b.index}</div><div class="block-meta"><div class="block-type">${isGen?'Genesis Block':isTamp?`Vote Block — Candidate ${b.data?.candidateId} ⚠ TAMPERED`:`Vote Block — ${cand?cand.name:'Unknown'}`}</div><div class="block-hash">${b.hash.slice(0,28)}…</div></div><div class="block-expand" style="transform:rotate(${expanded?180:0}deg)">⌄</div></div><div class="block-detail ${expanded?'open':''}"><div class="detail-row"><span class="detail-key">Index</span><span class="detail-val">${b.index}</span></div><div class="detail-row"><span class="detail-key">Timestamp</span><span class="detail-val">${b.timestamp}</span></div><div class="detail-row"><span class="detail-key">Previous hash</span><span class="detail-val">${b.previousHash}</span></div><div class="detail-row"><span class="detail-key">Hash</span><span class="detail-val ${isTamp?'bad':'ok'}">${b.hash}</span></div><div class="detail-row"><span class="detail-key">Nonce</span><span class="detail-val">${b.nonce}</span></div>${b.data?.voterKey?`<div class="detail-row"><span class="detail-key">Voter key</span><span class="detail-val">${b.data.voterKey}</span></div><div class="detail-row"><span class="detail-key">Signature</span><span class="detail-val">${b.data.signature?.slice(0,32)}…</span></div>`:''}${b.data?.message?`<div class="detail-row"><span class="detail-key">Message</span><span class="detail-val">${b.data.message}</span></div>`:''}</div></div></div>`}).join('')}
+
+function toggleBlock(i){if(expandedBlocks.has(i))expandedBlocks.delete(i);else expandedBlocks.add(i);renderChain()}
+
+async function handleRegister(){const name=document.getElementById('regName').value.trim(),id=document.getElementById('regId').value.trim();const al=document.getElementById('regAlert');al.style.display='block';if(!name||!id){al.className='alert alert-error';al.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg> Please enter your name and voter ID.';return}if(Object.values(voters).find(v=>v.voterId===id)){al.className='alert alert-error';al.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/></svg> This voter ID is already registered.';return}const kp=genWallet();voters[kp.publicKey]={name,voterId:id,voted:false,publicKey:kp.publicKey};wallet=kp;document.getElementById('wPub').textContent=kp.publicKey;document.getElementById('wPriv').textContent=kp.privateKey;document.getElementById('walletBox').style.display='block';al.className='alert alert-success';al.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Registered! Wallet generated for ${name}.`;document.getElementById('regName').value='';document.getElementById('regId').value='';refreshAll()}
+
+async function handleVote(){if(!wallet||!selectedCand||mining)return;const voter=voters[wallet.publicKey];if(voter?.voted)return;mining=true;const btn=document.getElementById('voteBtn');btn.disabled=true;btn.textContent='Mining…';const ms=document.getElementById('miningStatus');ms.innerHTML='<div class="mining-anim"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> Mining block<span class="mining-dots"><span>.</span><span>.</span><span>.</span></span></div>';const sig=await sha256(`${selectedCand}:${wallet.privateKey}:${Date.now()}`);const vd={type:'VOTE',voterKey:wallet.publicKey,candidateId:selectedCand,signature:sig,timestamp:new Date().toISOString()};const prev=chain[chain.length-1];const{hash,nonce}=await mine(vd,prev.hash);const block={index:chain.length,timestamp:vd.timestamp,data:vd,previousHash:prev.hash,hash,nonce};chain.push(block);voters[wallet.publicKey].voted=true;mining=false;document.getElementById('voteAlert').style.display='block';document.getElementById('voteAlert').className='alert alert-success';document.getElementById('voteAlert').innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> Vote mined into Block #${block.index}! Nonce: ${nonce}`;ms.innerHTML='';setTimeout(()=>{updateVotePage();refreshAll()},800)}
+
+function handleTamper(){const idx=parseInt(document.getElementById('tamperIdx').value);const val=document.getElementById('tamperVal').value.trim().toUpperCase();if(isNaN(idx)||idx<1||idx>=chain.length){return}if(!val){return}chain=chain.map((b,i)=>i===idx?{...b,data:{...b.data,candidateId:val,_tampered:true}}:b);document.getElementById('validateResult').style.display='none';refreshAll()}
+
+async function validateChain(){let broken=null;for(let i=1;i<chain.length;i++){const b=chain[i];const exp=await sha256(`${b.previousHash}${JSON.stringify(b.data)}${b.nonce}`);if(exp!==b.hash||b.previousHash!==chain[i-1].hash){broken=i;break}}const el=document.getElementById('validateResult');el.style.display='flex';if(broken===null){el.className='validate-result ok';el.innerHTML=`<div class="validate-icon">✅</div><div class="validate-text"><div class="validate-title">Chain is Valid</div><div class="validate-desc">All ${chain.length} blocks passed cryptographic verification. No tampering detected.</div></div>`}else{el.className='validate-result fail';el.innerHTML=`<div class="validate-icon">🚨</div><div class="validate-text"><div class="validate-title">Tamper Detected — Block #${broken}</div><div class="validate-desc">Block #${broken} has an invalid hash. The chain integrity is compromised. This is exactly how blockchain prevents fraud.</div></div>`}document.getElementById('ovInteg').textContent=broken===null?'Valid':'BROKEN';document.getElementById('ovInteg').style.color=broken===null?'#22d3a0':'#f87171'}
+
+renderCandidateGrid();refreshAll();
+</script>
