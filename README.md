@@ -113,7 +113,7 @@ blockchain-voting/
 
 ## 👩‍💻 Author
 
-**Nishathi** — Built with ❤️ using Node.js, MongoDB & Web Crypto API
+**Nishanthi** — Built with  using Node.js, MongoDB & Web Crypto API
 
 ---
 
